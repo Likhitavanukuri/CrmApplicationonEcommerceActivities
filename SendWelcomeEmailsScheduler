@@ -1,0 +1,26 @@
+public class SendWelcomeEmailsScheduler implements Schedulable {
+
+    // The execute method that will be called by the scheduler
+    public void execute(SchedulableContext context) {
+        // Query Translist records for today's emails to be sent
+        List<Translist__c> translistRecords = [SELECT Id, Name, Mailid__c, Itemrelated__c FROM Translist__c];
+        
+        if (!translistRecords.isEmpty()) {
+            // Call the sendWelcomeEmails method to send the email
+            TranslistEmailSender.sendWelcomeEmails(translistRecords);
+        }
+    }
+
+    // Method to schedule the job to run daily at 2:30 PM
+    public static void scheduleDailyEmailJob() {
+        // Cron expression for 2:30 PM every day
+        String cronExpression = '0 20 14 * * ?';
+        
+        // Create instance of scheduler class
+        SendWelcomeEmailsScheduler emailScheduler = new SendWelcomeEmailsScheduler();
+        
+        // Schedule the job
+        System.schedule('Send Welcome Emails Daily', cronExpression, emailScheduler);
+    }
+}
+
