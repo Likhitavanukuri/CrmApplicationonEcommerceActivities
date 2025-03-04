@@ -1,0 +1,42 @@
+public class TranslistEmailSender {
+
+    public static void sendWelcomeEmails(List<Translist__c> translistRecords) {
+        List<Messaging.SingleEmailMessage> emailsToSend = new List<Messaging.SingleEmailMessage>();
+        
+        Set<Id> itemRelatedIds = new Set<Id>();
+
+        for (Translist__c ts : translistRecords) {
+            if (ts.Itemrelated__c != null) {
+                itemRelatedIds.add(ts.Itemrelated__c);
+            }
+        }
+
+        Map<Id, Items__c> itemMap = new Map<Id, Items__c>();
+        if (!itemRelatedIds.isEmpty()) {
+            List<Items__c> itemsList = [SELECT Id, Name FROM Items__c WHERE Id IN :itemRelatedIds];
+            for (Items__c item : itemsList) {
+                itemMap.put(item.Id, item);
+            }
+        }
+
+        for (Translist__c ts : translistRecords) {
+            if (ts.Mailid__c != null) {
+                String emailBody = 'Dear ' + ts.Name + ',\n\n' +
+                                   'Welcome to our company! You have been seen as a valuable customer to us. ' +
+                                   'Please continue your journey with us while we try to provide you with valuable resources.\n\n' +
+                                   'We are proud to associate with valuable customers like you and we look forward to collaborating with you by providing more exciting offers.\n\n';
+
+                Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+                email.setToAddresses(new List<String>{ts.Mailid__c});
+                email.setSubject('Welcome to our company');
+                email.setPlainTextBody(emailBody);
+
+                emailsToSend.add(email);
+            }
+        }
+
+        if (!emailsToSend.isEmpty()) {
+            Messaging.sendEmail(emailsToSend);
+        }
+    }
+}
