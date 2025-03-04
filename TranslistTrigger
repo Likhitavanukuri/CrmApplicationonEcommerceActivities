@@ -1,0 +1,10 @@
+trigger TranslistTrigger on Translist__c (after insert) {
+    
+        if(trigger.isAfter)
+        {
+            if(trigger.isInsert)
+            {
+                handlerTranslist.doc(trigger.new);
+            }
+        }
+}
