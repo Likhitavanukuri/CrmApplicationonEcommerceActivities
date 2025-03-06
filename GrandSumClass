@@ -1,3 +1,8 @@
 public class Grandsum {
 
 }
+//code to write method- "sumofGrand"  inside the class
+public class Grandsum {
+   public void sumofGrand() {
+    }
+}
